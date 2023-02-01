@@ -25,7 +25,7 @@ sudo pacman -S git gcc freeglut
 Then clone repository and compile source code:
 
 ````
-https://github.com/MichuuMichuu18/2048.git
+git clone https://github.com/MichuuMichuu18/2048.git
 cd 2048
 gcc 2048.c -o 2048 -lGL -lGLU -lglut -lm
 ````
