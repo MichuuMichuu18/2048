@@ -399,9 +399,9 @@ void keyboard(unsigned char key, int x, int y) {
         case 'x':
             menu = false;
             break;
-        case 'q':
+        /*case 'q':
             exit(0);
-            break;
+            break;*/
     }
     if (!moved) {
         int i, j;
