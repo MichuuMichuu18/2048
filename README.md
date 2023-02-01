@@ -4,7 +4,7 @@
 ![Game screenshot](screenshot.png)
 
 # Build instructions
-You need to install freeglut headers and build tools:
+You need to install freeglut development files and GNU GCC compiler:
 
 Debian/Ubuntu:
 ````
@@ -21,7 +21,7 @@ Arch:
 sudo pacman -S gcc freeglut
 ````
 
-After installing run this command in cloned repository:
+After installing compile 2048.c using this command:
 
 ````
 gcc 2048.c -o 2048 -lGL -lGLU -lglut -lm
