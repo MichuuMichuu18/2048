@@ -4,25 +4,28 @@
 ![Game screenshot](screenshot.png)
 
 # Build instructions
-You need to install freeglut development files and GNU GCC compiler:
+
+You need to install Git, freeglut development files and GNU GCC compiler:
 
 Debian/Ubuntu:
 ````
-sudo apt install gcc freeglut3-dev
+sudo apt install git gcc freeglut3-dev
 ````
 
 Fedora:
 ````
-sudo dnf install gcc freeglut-devel
+sudo dnf install git gcc freeglut-devel
 ````
 
 Arch:
 ````
-sudo pacman -S gcc freeglut
+sudo pacman -S git gcc freeglut
 ````
 
-After installing compile 2048.c using this command:
+Then clone repository and compile source code:
 
 ````
+https://github.com/MichuuMichuu18/2048.git
+cd 2048
 gcc 2048.c -o 2048 -lGL -lGLU -lglut -lm
 ````
