@@ -137,13 +137,13 @@ void display() {
                     b = 0;
                     break;
             }
-
-            glColor3f(r/255.0, g/255.0, b/255.0);
             //glRectf((j + 0.1) / N, (i + 0.1) / N, (j + 0.9) / N, (i + 0.9) / N);
             
             if (menu) {
                 //start screen background
-                glColor3f(238./255., 228./255., 218./255.);
+                glColor3f(204.0/255.0/1.125, 192.0/255.0/1.125, 179.0/255.0/1.125);
+                renderRoundedRectangle(0.1, 0.275, 0.8, 0.4, 0.15 / N);
+                glColor3f(238.0/255.0, 228.0/255.0, 218.0/255.0);
                 renderRoundedRectangle(0.1, 0.3, 0.8, 0.4, 0.15 / N);
                 
                 //text color
@@ -152,7 +152,7 @@ void display() {
                 int len;
                 
                 glLineWidth(4.0);
-                sprintf(str, "2048 v0.7");
+                sprintf(str, "2048 v0.8");
                 glPushMatrix();
                 glTranslatef(0.1+0.15, 0.3+0.25, 0);
                 glScalef(0.0005, 0.0005, 0);
@@ -182,7 +182,10 @@ void display() {
                 glPopMatrix();*/
             } else if (!menu) {
                 glLineWidth(4.0);
-                renderRoundedRectangle((j + 0.1) / N, (i + 0.1) / N, 0.8 / N, 0.8 / N, 0.15 / N);
+                glColor3f(r/255.0/1.25, g/255.0/1.25, b/255.0/1.25);
+                renderRoundedRectangle((j + 0.1) / N, (i + 0.1) / N-0.0125, 0.8 / N, 0.8 / N, 0.1 / N);
+                glColor3f(r/255.0, g/255.0, b/255.0);
+                renderRoundedRectangle((j + 0.1) / N, (i + 0.1) / N+0.0125, 0.8 / N, 0.8 / N, 0.1 / N);
                 
                 // set the color of the text
                 if (value < 9) {
@@ -197,14 +200,14 @@ void display() {
                 glPushMatrix();
                 //glTranslatef((j + 0.3) / N, (i + 0.325) / N, 0);
                 if (value < 10) {
-                    glTranslatef((j + 0.3) / N, (i + 0.325) / N, 0);
+                    glTranslatef((j + 0.3) / N, (i + 0.325) / N+0.0125, 0);
                     glScalef(0.001, 0.001, 0);
                 } else if (value > 9 && value < 100) {
-                    glTranslatef((j + 0.15) / N, (i + 0.35) / N, 0);
+                    glTranslatef((j + 0.15) / N, (i + 0.35) / N+0.0125, 0);
                     glScalef(0.00075, 0.00075, 0);
                 }
                 else if (value > 99 && value < 1000){
-                    glTranslatef((j + 0.175) / N, (i + 0.4) / N, 0);
+                    glTranslatef((j + 0.175) / N, (i + 0.4) / N+0.0125, 0);
                     glScalef(0.0005, 0.0005, 0);
                 }
                 else {
@@ -396,12 +399,15 @@ void keyboard(unsigned char key, int x, int y) {
         case 'r':
             if(!menu) {init();}
             break;
+        case 'm':
+            menu = true;
+            break;
         case 'x':
             menu = false;
             break;
-        /*case 'q':
+        case 'q':
             exit(0);
-            break;*/
+            break;
     }
     if (!moved) {
         int i, j;
@@ -430,7 +436,7 @@ int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glutInitWindowSize(500, 500);
-    glutCreateWindow("2048 v0.7");
+    glutCreateWindow("2048 v0.8");
     glClearColor(204./255., 192./255., 179./255., 1.0);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
