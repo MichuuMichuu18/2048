@@ -11,14 +11,37 @@
 #define N 4
 
 bool menu = false;
+bool gameover = false;
 int score = 0;
 
+float lineWidth = 1.0;
+
 int board[N][N];
+
+typedef struct {
+    int r, g, b;
+} Color;
+
+Color colors[] = {
+    {238, 228, 218},   // 2
+    {237, 224, 200},   // 4
+    {242, 177, 121},   // 8
+    {245, 149, 99},    // 16
+    {246, 124, 95},    // 32
+    {246, 94, 59},     // 64
+    {237, 207, 114},   // 128
+    {237, 204, 97},    // 256
+    {237, 204, 80},    // 512
+    {237, 197, 63},    // 1024
+    {237, 194, 46},    // 2048
+    {0, 0, 0}          // Default
+};
 
 void init() {
     int i, j;
     
     score = 0;
+    gameover = false;
 
     srand(time(NULL));
 
@@ -62,48 +85,59 @@ void renderRoundedRectangle(float x, float y, float width, float height, float r
     glRectf(x + radius, y, x + width - radius, y + height);
 }
 
+void renderX(float x, float y, float size) {
+    glPushMatrix();
+    glTranslatef(x, y, 0);
+    glScalef(size, size, 1);
+
+    glBegin(GL_LINES);
+    glVertex2f(-1, -1);
+    glVertex2f(1, 1);
+    glVertex2f(-1, 1);
+    glVertex2f(1, -1);
+    glEnd();
+
+    glPopMatrix();
+}
+
+void drawCloseButton(float x, float y, float size){
+    glColor3f(238.0/255.0/1.25, 128.0/255.0/1.25, 118.0/255.0/1.25);
+    drawCircle(x+size/2, y+size/2, size/2, 20);
+    glColor3f(238.0/255.0, 128.0/255.0, 118.0/255.0);
+    drawCircle(x+size/2, y+size/2+0.01, size/2, 20);
+    
+    // clone line width
+    GLfloat prevLineWidth;
+    glGetFloatv(GL_LINE_WIDTH, &prevLineWidth);
+
+    // draw X
+    glLineWidth(lineWidth*3.0);
+    glColor3f(238.0/255.0/1.5, 128.0/255.0/1.5, 118.0/255.0/1.5);
+    renderX(x+size/2, y+size/2+0.01, size/5);
+    
+    // Use previous line width
+    glLineWidth(prevLineWidth);
+}
+
 void display() {
     int i, j;
     
     if(menu) { glClearColor(204./255./1.5, 192./255./1.5, 179./255./1.5, 1.0); }
     else { glClearColor(204./255., 192./255., 179./255., 1.0); }
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
             int value = board[i][j];
             if (value == 0) continue;
-
-            int r = 255, g = 255, b = 255;
-            switch (value) {
-                case 2:
-                    r = 238, g = 228, b = 218; break;
-                case 4:
-                    r = 237, g = 224, b = 200; break;
-                case 8:
-                    r = 242,  g = 177, b = 121; break;
-                case 16:
-                    r = 245, g = 149, b = 99;  break;
-                case 32:
-                    r = 246, g = 124, b = 95;  break;
-                case 64:
-                    r = 246, g = 94,  b = 59;  break;
-                case 128:
-                    r = 237, g = 207, b = 114; break;
-                case 256:
-                    r = 237, g = 204, b = 97;  break;
-                case 512:
-                    r = 237, g = 204, b = 80;  break;
-                case 1024:
-                    r = 237, g = 197, b = 63;  break;
-                case 2048:
-                    r = 237, g = 194, b = 46;  break;
-                default:
-                    r = 0,   g = 0,   b = 0;   break;
-            }
             
-            glLineWidth(4.0);
+            Color color = colors[(int)log2(value) - 1];
+            int r = color.r, g = color.g, b = color.b;
+            
+            glLineWidth(lineWidth*4.0);
+            
+            // drawing rectangles
             float cr = r/255.0, cg = g/255.0, cb = b/255.0;
             if (menu) { cr = r/255.0/1.5; cg = g/255.0/1.5; cb = b/255.0/1.5; }
             glColor3f(cr/1.25, cg/1.25, cb/1.25);
@@ -121,12 +155,10 @@ void display() {
             if (menu) {  tcr /= 1.5; tcg /= 1.5; tcb /= 1.5; }
             glColor3f(tcr, tcg, tcb);
             
-            // convert the value to a string
+            // draw block value
             char str[10];
             sprintf(str, "%d", value);
-            // position the text
             glPushMatrix();
-            //glTranslatef((j + 0.3) / N, (i + 0.325) / N, 0);
             if (value < 10) {
                 glTranslatef((j + 0.3) / N, (i + 0.325) / N+0.0125, 0);
                 glScalef(0.001, 0.001, 0);
@@ -147,26 +179,33 @@ void display() {
         }
     }
     
-    //menu
+    // menu
     if (menu) {
         glColor3f(238.0/255.0/1.25, 228.0/255.0/1.25, 218.0/255.0/1.25);
         renderRoundedRectangle(0.1, 0.275, 0.8, 0.4, 0.15 / N);
         glColor3f(238.0/255.0, 228.0/255.0, 218.0/255.0);
         renderRoundedRectangle(0.1, 0.3, 0.8, 0.4, 0.15 / N);
         
-        //text color
-        glColor3f(119./255., 110./255., 101./255.);
+        drawCloseButton(0.825, 0.615, 0.05);
         
-        glLineWidth(4.0);
+        glColor3f(119./255., 110./255., 101./255.);
+        glLineWidth(lineWidth*4.0);
         char str[21];
-        sprintf(str, "2048 v0.9");
         glPushMatrix();
-        glTranslatef(0.1+0.15, 0.3+0.275, 0);
+        if(gameover) {
+          sprintf(str, "Game over!");
+          glTranslatef(0.25, 0.3+0.275, 0);
+        } else {
+          sprintf(str, "2048");
+          glTranslatef(0.4, 0.3+0.275, 0);
+        }
         glScalef(0.0005, 0.0005, 0);
         for (int k = 0; k < strlen(str); k++) {
             glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
         }
         glPopMatrix();
+        
+        //keyboard buttons
         glColor3f(68./255./1.5, 58./255./1.5, 48./255./1.5);
         glRectf(0.1775, 0.336, 0.1775+0.05, 0.336-0.01);
         glRectf(0.597, 0.336, 0.597+0.05, 0.336-0.01);
@@ -175,26 +214,8 @@ void display() {
         glRectf(0.597, 0.336, 0.597+0.05, 0.336+0.05);
         glColor3f(119./255., 110./255., 101./255.);
         
-        glColor3f(238.0/255.0/1.25, 128.0/255.0/1.25, 118.0/255.0/1.25);
-        drawCircle(0.85, 0.64, 0.025, 20);
-        glColor3f(238.0/255.0, 128.0/255.0, 118.0/255.0);
-        drawCircle(0.85, 0.65, 0.025, 20);
-        
-        glLineWidth(2.5);
-        glColor3f(238.0/255.0/1.5, 128.0/255.0/1.5, 118.0/255.0/1.5);
-        glTranslatef(0.0, 0.0, 0);
-        glScalef(1.0, 1.0, 0);
-        glBegin(GL_LINES);
-        glVertex2d(0.84, 0.64);
-        glVertex2d(0.86, 0.66);
-        glEnd();
-        glBegin(GL_LINES);
-        glVertex2d(0.84, 0.66);
-        glVertex2d(0.86, 0.64);
-        glEnd();
-        
         glColor3f(119./255., 110./255., 101./255.);
-        glLineWidth(2.0);
+        glLineWidth(lineWidth*2.0);
         sprintf(str, "X - play again  Q - quit");
         glPushMatrix();
         glTranslatef(0.19, 0.35, 0);
@@ -206,7 +227,8 @@ void display() {
         }
         glPopMatrix();
         
-        glLineWidth(2.5);
+        //line between score and menu buttons
+        glLineWidth(lineWidth*2.0);
         glTranslatef(0.0, 0.0, 0);
         glScalef(1.0, 1.0, 0);
         glBegin(GL_LINES);
@@ -216,7 +238,7 @@ void display() {
         
         sprintf(str, "Score: %d", score);
         glPushMatrix();
-        glLineWidth(2.0);
+        glLineWidth(lineWidth*2.0);
         glTranslatef(0.1+0.0775, 0.475, 0);
         glScalef(0.00025, 0.00025, 0);
         for (int k = 0; k < strlen(str); k++) {
@@ -344,81 +366,125 @@ int move_right() {
     return moved;
 }
 
-void add_and_check() {
-    // add a random value to the board
-    int x = rand() % 4;
-    int y = rand() % 4;
-    while (board[x][y] != 0) {
-        x = rand() % 4;
-        y = rand() % 4;
-    }
+// add a random value to an empty tile on the board
+void add() {
+    int x, y;
+    do {
+        x = rand() % N;
+        y = rand() % N;
+    } while (board[x][y] != 0);
     board[x][y] = (rand() % 2 == 0) ? 2 : 4;
-    
-    int i, j;
-    // check if there are any possible moves
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            if ((i < N - 1 && board[i][j] == board[i + 1][j]) ||
-                (j < N - 1 && board[i][j] == board[i][j + 1])) return;
-        }
-    }
-    
-    // check if board is full
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            if (board[i][j] == 0) return;
-        }
-    }
-    // No possible moves and board is full, game over
-    menu = true;
 }
 
-void keyboard(unsigned char key, int x, int y) {
-    int moved = 0;
-    switch (tolower(key)) {
-        case 'w':
-            if(!menu) moved = move_up();
-            break;
-        case 's':
-            if(!menu) moved = move_down();
-            break;
-        case 'a':
-            if(!menu) moved = move_left();
-            break;
-        case 'd':
-            if(!menu) moved = move_right();
-            break;
-        case 'm':
-            menu = true;
-            break;
-        case 'x':
-            if (menu) menu = false;
-            init();
-            break;
-        case 'q':
-            if (menu) exit(0);
-            break;
-    }
-    if (!moved) {
-        int i, j;
-        for (i = 0; i < N; i++) {
-            for (j = 0; j < N-1; j++) {
-                if (board[i][j] == board[i][j+1]) break;
+// check if the game is over
+bool isGameOver() {
+    // check for any empty tile
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            if (board[i][j] == 0) {
+                return false;
             }
-            if (board[i][j] == board[i][j+1]) break;
         }
-        if (i == N && j == N-1) menu = true;
-    } 
-    if (moved) add_and_check();
-    
+    }
+
+    // check for any adjacent tiles with the same value
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            int val = board[i][j];
+            if ((i > 0 && board[i-1][j] == val) ||
+                (i < N-1 && board[i+1][j] == val) ||
+                (j > 0 && board[i][j-1] == val) ||
+                (j < N-1 && board[i][j+1] == val)) {
+                return false;
+            }
+        }
+    }
+
+    // no empty tile and no adjacent tiles with the same value, game over
+    return true;
+}
+
+// handle keyboard input
+void keyboard(unsigned char key, int x, int y) {
+    if (menu) {
+        switch (tolower(key)) {
+            case 'x':  // restart the game
+                init();
+                menu = false;
+                break;
+            case 'q':  // exit the game
+                exit(0);
+                break;
+            case 27:  // close menu
+                menu = false;
+                break;
+        }
+    } else {
+        int moved = 0;
+        switch (tolower(key)) {
+            case 'w':  // move up
+                moved = move_up();
+                break;
+            case 's':  // move down
+                moved = move_down();
+                break;
+            case 'a':  // move left
+                moved = move_left();
+                break;
+            case 'd':  // move right
+                moved = move_right();
+                break;
+            case 27:  // open menu
+                menu = true;
+                break;
+        }
+        if (moved) {
+            add();
+            if (isGameOver()) {
+                gameover = true;
+                menu = true;
+            }
+        } else {
+            // check for game over
+            if (isGameOver()) {
+                gameover = true;
+                menu = true;
+            }
+        }
+    }
     glutPostRedisplay();
+}
+
+int viewportWidth, viewportHeight, xOffset, yOffset;
+
+void resize(int width, int height) {
+    // Calculate the largest square that fits within the window
+    if (width < height) {
+        viewportWidth = viewportHeight = width;
+        xOffset = 0;
+        yOffset = (height - width) / 2;
+    } else {
+        viewportWidth = viewportHeight = height;
+        xOffset = (width - height) / 2;
+        yOffset = 0;
+    }
+
+    // Set the viewport and orthographic projection matrix
+    glViewport(xOffset, yOffset, viewportWidth, viewportHeight);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    
+    // Scale the line width based on the window size
+    lineWidth = viewportWidth/480.0f;
 }
 
 void mouse(int button, int state, int x, int y) {
     if (state == GLUT_DOWN) {
         // Convert pixel coordinates to (0.0, 1.0) format
-        float xf = (float)x / (float)glutGet(GLUT_WINDOW_WIDTH);
-        float yf = 1.0f - ((float)y / (float)glutGet(GLUT_WINDOW_HEIGHT));
+        float xf = ((float)x - xOffset) / (float)viewportWidth;
+        float yf = 1.0f - (((float)y - yOffset) / (float)viewportHeight);
 
         // Calculate distance from mouse click to center of button
         float dx = xf - 0.85f;
@@ -433,17 +499,20 @@ void mouse(int button, int state, int x, int y) {
     glutPostRedisplay();
 }
 
+void idle() {
+    glutPostRedisplay();
+}
+
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-    glutInitWindowSize(500, 500);
-    glutCreateWindow("2048 v0.9");
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(480, 640);
+    glutCreateWindow("2048");
+    
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 
-    init();
-    
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
@@ -453,6 +522,9 @@ int main(int argc, char** argv) {
     glEnable(GL_POINT_SMOOTH);
     glHint(GL_POINT_SMOOTH, GL_NICEST);
 
+    init();
+    
+    glutReshapeFunc(resize);
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
     glutMouseFunc(mouse);
