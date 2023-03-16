@@ -50,6 +50,7 @@ void init() {
             board[i][j] = 0;
         }
     }
+    
     int x = rand() % 4;
     int y = rand() % 4;
     board[x][y] = (rand() % 2 == 0) ? 2 : 4;
@@ -72,20 +73,22 @@ void drawCircle(float x, float y, float radius, int num_segments) {
     glEnd(); // End drawing the triangle fan
 }
 
-void renderRoundedRectangle(float x, float y, float width, float height, float radius) {
+void drawRoundedRectangle(float x, float y, float width, float height, float radius) {
     int i;
-    int triangleAmount = 20; // increase for more roundness
-
+    int triangleAmount = 20;
+    
+    //draw corners
     drawCircle(x + width - radius, y + radius, radius, triangleAmount);
     drawCircle(x + radius, y + radius, radius, triangleAmount);
     drawCircle(x + width - radius, y + height - radius, radius, triangleAmount);
     drawCircle(x + radius, y + height - radius, radius, triangleAmount);
-
+    
+    //fill with rectangles
     glRectf(x, y + radius, x + width, y + height - radius);
     glRectf(x + radius, y, x + width - radius, y + height);
 }
 
-void renderX(float x, float y, float size) {
+void drawX(float x, float y, float size) {
     glPushMatrix();
     glTranslatef(x, y, 0);
     glScalef(size, size, 1);
@@ -113,10 +116,20 @@ void drawCloseButton(float x, float y, float size){
     // draw X
     glLineWidth(lineWidth*3.0);
     glColor3f(238.0/255.0/1.5, 128.0/255.0/1.5, 118.0/255.0/1.5);
-    renderX(x+size/2, y+size/2+0.01, size/5);
+    drawX(x+size/2, y+size/2+0.01, size/5);
     
     // Use previous line width
     glLineWidth(prevLineWidth);
+}
+
+void drawMenuButton(float x, float y, float xsize, float ysize){
+    //darker part of button
+    glColor3f(68./255./1.5, 58./255./1.5, 48./255./1.5);
+    glRectf(x, y, x+xsize, y-0.01+ysize);
+    
+    //brighter part of button
+    glColor3f(68./255., 58./255., 48./255.);
+    glRectf(x, y+0.01, x+xsize, y+0.01+ysize);
 }
 
 void display() {
@@ -141,9 +154,9 @@ void display() {
             float cr = r/255.0, cg = g/255.0, cb = b/255.0;
             if (menu) { cr = r/255.0/1.5; cg = g/255.0/1.5; cb = b/255.0/1.5; }
             glColor3f(cr/1.25, cg/1.25, cb/1.25);
-            renderRoundedRectangle((j + 0.1) / N, (i + 0.1) / N-0.0125, 0.8 / N, 0.8 / N, 0.1 / N);
+            drawRoundedRectangle((j + 0.1) / N, (i + 0.1) / N-0.0125, 0.8 / N, 0.8 / N, 0.1 / N);
             glColor3f(cr, cg, cb);
-            renderRoundedRectangle((j + 0.1) / N, (i + 0.1) / N+0.0125, 0.8 / N, 0.8 / N, 0.1 / N);
+            drawRoundedRectangle((j + 0.1) / N, (i + 0.1) / N+0.0125, 0.8 / N, 0.8 / N, 0.1 / N);
                 
             // set the color of the text
             float tcr, tcg, tcb;
@@ -182,11 +195,11 @@ void display() {
     // menu
     if (menu) {
         glColor3f(238.0/255.0/1.25, 228.0/255.0/1.25, 218.0/255.0/1.25);
-        renderRoundedRectangle(0.1, 0.275, 0.8, 0.4, 0.15 / N);
+        drawRoundedRectangle(0.1, 0.2, 0.8, 0.5, 0.15 / N);
         glColor3f(238.0/255.0, 228.0/255.0, 218.0/255.0);
-        renderRoundedRectangle(0.1, 0.3, 0.8, 0.4, 0.15 / N);
+        drawRoundedRectangle(0.1, 0.225, 0.8, 0.5, 0.15 / N);
         
-        drawCloseButton(0.825, 0.615, 0.05);
+        drawCloseButton(0.825, 0.635, 0.05);
         
         glColor3f(119./255., 110./255., 101./255.);
         glLineWidth(lineWidth*4.0);
@@ -194,10 +207,10 @@ void display() {
         glPushMatrix();
         if(gameover) {
           sprintf(str, "Game over!");
-          glTranslatef(0.25, 0.3+0.275, 0);
+          glTranslatef(0.25, 0.325+0.275, 0);
         } else {
           sprintf(str, "2048");
-          glTranslatef(0.4, 0.3+0.275, 0);
+          glTranslatef(0.4, 0.325+0.275, 0);
         }
         glScalef(0.0005, 0.0005, 0);
         for (int k = 0; k < strlen(str); k++) {
@@ -205,42 +218,48 @@ void display() {
         }
         glPopMatrix();
         
-        //keyboard buttons
-        glColor3f(68./255./1.5, 58./255./1.5, 48./255./1.5);
-        glRectf(0.1775, 0.336, 0.1775+0.05, 0.336-0.01);
-        glRectf(0.597, 0.336, 0.597+0.05, 0.336-0.01);
-        glColor3f(68./255., 58./255., 48./255.);
-        glRectf(0.1775, 0.336, 0.1775+0.05, 0.336+0.05);
-        glRectf(0.597, 0.336, 0.597+0.05, 0.336+0.05);
-        glColor3f(119./255., 110./255., 101./255.);
+        //menu buttons
+        glColor3f(1,0,0);
+        drawMenuButton(0.1775, 0.376, 0.3, 0.05);
+        drawMenuButton(0.1775, 0.276, 0.15, 0.05);
+        //drawMenuButton(0.597, 0.326, 0.05, 0.05);
         
-        glColor3f(119./255., 110./255., 101./255.);
+        glColor3f(219./255., 210./255., 201./255.);
         glLineWidth(lineWidth*2.0);
-        sprintf(str, "X - play again  Q - quit");
+        //sprintf(str, "X - play again  Q - quit");
+        sprintf(str, "Play again");
         glPushMatrix();
-        glTranslatef(0.19, 0.35, 0);
+        glTranslatef(0.2, 0.4, 0);
         glScalef(0.00025, 0.00025, 0);
         for (int k = 0; k < strlen(str); k++) {
-            if (k == 0 || k == 16) glColor3f(219./255., 210./255., 201./255.);
-            else glColor3f(119./255., 110./255., 101./255.);
             glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
         }
         glPopMatrix();
+        //sprintf(str, "X - play again  Q - quit");
+        sprintf(str, "Quit");
+        glPushMatrix();
+        glTranslatef(0.2, 0.3, 0);
+        glScalef(0.00025, 0.00025, 0);
+        for (int k = 0; k < strlen(str); k++) {
+            glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
+        }
+        glPopMatrix();
+        glColor3f(119./255., 110./255., 101./255.);
         
         //line between score and menu buttons
         glLineWidth(lineWidth*2.0);
         glTranslatef(0.0, 0.0, 0);
         glScalef(1.0, 1.0, 0);
         glBegin(GL_LINES);
-        glVertex2d(0.1775, 0.425);
-        glVertex2d(0.825, 0.425);
+        glVertex2d(0.1775, 0.475);
+        glVertex2d(0.825, 0.475);
         glEnd();
         
         sprintf(str, "Score: %d", score);
         glPushMatrix();
         glLineWidth(lineWidth*2.0);
-        glTranslatef(0.1+0.0775, 0.475, 0);
-        glScalef(0.00025, 0.00025, 0);
+        glTranslatef(0.1+0.0775, 0.525, 0);
+        glScalef(0.00025, 0.00024, 0);
         for (int k = 0; k < strlen(str); k++) {
             glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
         }
@@ -407,14 +426,15 @@ bool isGameOver() {
 // handle keyboard input
 void keyboard(unsigned char key, int x, int y) {
     if (menu) {
+        //will probably be removed in the future
         switch (tolower(key)) {
-            case 'x':  // restart the game
+            /*case 'x':  // restart the game
                 init();
                 menu = false;
                 break;
             case 'q':  // exit the game
                 exit(0);
-                break;
+                break;*/
             case 27:  // close menu
                 menu = false;
                 break;
@@ -485,15 +505,27 @@ void mouse(int button, int state, int x, int y) {
         // Convert pixel coordinates to (0.0, 1.0) format
         float xf = ((float)x - xOffset) / (float)viewportWidth;
         float yf = 1.0f - (((float)y - yOffset) / (float)viewportHeight);
-
-        // Calculate distance from mouse click to center of button
+        
+        // Calculate distance from mouse click to center of X button
         float dx = xf - 0.85f;
         float dy = yf - 0.65f;
-        float dist = sqrt(dx*dx + dy*dy);
-
-        // Check if mouse click is inside button circle
-        if (dist <= 0.025f) {
-            if(menu) menu = false;
+        
+        // if menu is opened
+        if(menu){
+            float dist = sqrt(dx*dx + dy*dy);
+            // Check if mouse click is inside X button
+            if (dist <= 0.025f) {
+                if(menu) menu = false;
+            }
+            // Check if mouse click is inside menu button
+            if (xf >= 0.1775 && xf <= 0.1775+0.3 && yf >= 0.376 && yf <= 0.376+0.06) {
+                //Play again
+                init();
+                menu = false;
+            } else if (xf >= 0.1775 && xf <= 0.1775+0.15 && yf >= 0.276 && yf <= 0.276+0.06) {
+                //Quit
+                exit(0);
+            }
         }
     }
     glutPostRedisplay();
