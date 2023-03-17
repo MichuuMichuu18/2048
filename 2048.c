@@ -508,7 +508,7 @@ void mouse(int button, int state, int x, int y) {
         
         // Calculate distance from mouse click to center of X button
         float dx = xf - 0.85f;
-        float dy = yf - 0.65f;
+        float dy = yf - 0.67f;
         
         // if menu is opened
         if(menu){
@@ -538,7 +538,7 @@ void idle() {
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-    glutInitWindowSize(480, 640);
+    glutInitWindowSize(500, 500);
     glutCreateWindow("2048");
     
     glMatrixMode(GL_PROJECTION);
