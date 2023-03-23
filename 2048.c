@@ -73,15 +73,14 @@ void drawCircle(float x, float y, float radius, int num_segments) {
     glEnd(); // End drawing the triangle fan
 }
 
-void drawRoundedRectangle(float x, float y, float width, float height, float radius) {
+void drawRoundedRectangle(float x, float y, float width, float height, float radius, int num_segments) {
     int i;
-    int triangleAmount = 20;
     
     //draw corners
-    drawCircle(x + width - radius, y + radius, radius, triangleAmount);
-    drawCircle(x + radius, y + radius, radius, triangleAmount);
-    drawCircle(x + width - radius, y + height - radius, radius, triangleAmount);
-    drawCircle(x + radius, y + height - radius, radius, triangleAmount);
+    drawCircle(x + width - radius, y + radius, radius, num_segments);
+    drawCircle(x + radius, y + radius, radius, num_segments);
+    drawCircle(x + width - radius, y + height - radius, radius, num_segments);
+    drawCircle(x + radius, y + height - radius, radius, num_segments);
     
     //fill with rectangles
     glRectf(x, y + radius, x + width, y + height - radius);
@@ -122,14 +121,25 @@ void drawCloseButton(float x, float y, float size){
     glLineWidth(prevLineWidth);
 }
 
-void drawMenuButton(float x, float y, float xsize, float ysize){
+void drawMenuButton(float x, float y, float xsize, float ysize, char* text) {
     //darker part of button
     glColor3f(68./255./1.5, 58./255./1.5, 48./255./1.5);
-    glRectf(x, y, x+xsize, y-0.01+ysize);
+    drawRoundedRectangle(x, y, xsize, -0.01+ysize, 0.015, 20);
     
     //brighter part of button
     glColor3f(68./255., 58./255., 48./255.);
-    glRectf(x, y+0.01, x+xsize, y+0.01+ysize);
+    drawRoundedRectangle(x, y+0.01, xsize, 0.01+ysize, 0.015, 20);
+    
+    //text on top of button
+    glColor3f(219./255., 210./255., 201./255.);
+    glLineWidth(lineWidth*2.0);
+    glPushMatrix();
+    glTranslatef(x+0.025, y+ysize/2, 0);
+    glScalef(0.00025, 0.00025, 0);
+    for (int k = 0; k < strlen(text); k++) {
+        glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, text[k]);
+    }
+    glPopMatrix();
 }
 
 void display() {
@@ -154,9 +164,9 @@ void display() {
             float cr = r/255.0, cg = g/255.0, cb = b/255.0;
             if (menu) { cr = r/255.0/1.5; cg = g/255.0/1.5; cb = b/255.0/1.5; }
             glColor3f(cr/1.25, cg/1.25, cb/1.25);
-            drawRoundedRectangle((j + 0.1) / N, (i + 0.1) / N-0.0125, 0.8 / N, 0.8 / N, 0.1 / N);
+            drawRoundedRectangle((j + 0.1) / N, (i + 0.1) / N-0.0125, 0.8 / N, 0.8 / N, 0.1 / N, 20);
             glColor3f(cr, cg, cb);
-            drawRoundedRectangle((j + 0.1) / N, (i + 0.1) / N+0.0125, 0.8 / N, 0.8 / N, 0.1 / N);
+            drawRoundedRectangle((j + 0.1) / N, (i + 0.1) / N+0.0125, 0.8 / N, 0.8 / N, 0.1 / N, 20);
                 
             // set the color of the text
             float tcr, tcg, tcb;
@@ -195,9 +205,9 @@ void display() {
     // menu
     if (menu) {
         glColor3f(238.0/255.0/1.25, 228.0/255.0/1.25, 218.0/255.0/1.25);
-        drawRoundedRectangle(0.1, 0.2, 0.8, 0.5, 0.15 / N);
+        drawRoundedRectangle(0.1, 0.2, 0.8, 0.5, 0.15 / N, 20);
         glColor3f(238.0/255.0, 228.0/255.0, 218.0/255.0);
-        drawRoundedRectangle(0.1, 0.225, 0.8, 0.5, 0.15 / N);
+        drawRoundedRectangle(0.1, 0.225, 0.8, 0.5, 0.15 / N, 20);
         
         drawCloseButton(0.825, 0.635, 0.05);
         
@@ -217,33 +227,10 @@ void display() {
             glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
         }
         glPopMatrix();
-        
-        //menu buttons
-        glColor3f(1,0,0);
-        drawMenuButton(0.1775, 0.376, 0.3, 0.05);
-        drawMenuButton(0.1775, 0.276, 0.15, 0.05);
-        //drawMenuButton(0.597, 0.326, 0.05, 0.05);
-        
-        glColor3f(219./255., 210./255., 201./255.);
-        glLineWidth(lineWidth*2.0);
-        //sprintf(str, "X - play again  Q - quit");
-        sprintf(str, "Play again");
-        glPushMatrix();
-        glTranslatef(0.2, 0.4, 0);
-        glScalef(0.00025, 0.00025, 0);
-        for (int k = 0; k < strlen(str); k++) {
-            glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
-        }
-        glPopMatrix();
-        //sprintf(str, "X - play again  Q - quit");
-        sprintf(str, "Quit");
-        glPushMatrix();
-        glTranslatef(0.2, 0.3, 0);
-        glScalef(0.00025, 0.00025, 0);
-        for (int k = 0; k < strlen(str); k++) {
-            glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
-        }
-        glPopMatrix();
+
+        drawMenuButton(0.1775, 0.376, 0.3, 0.05, "Play again");
+        drawMenuButton(0.1775, 0.276, 0.15, 0.05, "Quit");
+
         glColor3f(119./255., 110./255., 101./255.);
         
         //line between score and menu buttons
@@ -268,6 +255,8 @@ void display() {
     
     glutSwapBuffers();
 }
+
+//1 - UP
 
 int move_up(){
     int i, j, k;
@@ -515,7 +504,7 @@ void mouse(int button, int state, int x, int y) {
             float dist = sqrt(dx*dx + dy*dy);
             // Check if mouse click is inside X button
             if (dist <= 0.025f) {
-                if(menu) menu = false;
+                menu = false;
             }
             // Check if mouse click is inside menu button
             if (xf >= 0.1775 && xf <= 0.1775+0.3 && yf >= 0.376 && yf <= 0.376+0.06) {
