@@ -60,6 +60,7 @@ void display() {
     
     // Menu
     if (menu) {
+        char str[21];
         glColor3f(238.0/255.0/1.25, 228.0/255.0/1.25, 218.0/255.0/1.25);
         drawRoundedRectangle(0.1, 0.25, 0.8, 0.5, 0.05, 20);
         glColor3f(238.0/255.0, 228.0/255.0, 218.0/255.0);
@@ -67,9 +68,21 @@ void display() {
         
         drawCloseButton(0.825, 0.69, 0.05);
         
+        if(showkey) {
+            glColor3f(159./255., 150./255., 141./255.);
+            glLineWidth(lineWidth*2.0);
+            glPushMatrix();
+            glTranslatef(0.71, 0.71, 0);
+            glScalef(0.00025, 0.00025, 0);
+            sprintf(str, "esc");
+            for (int k = 0; k < strlen(str); k++) {
+                glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
+            }
+            glPopMatrix();
+        }
+        
         glColor3f(119./255., 110./255., 101./255.);
         glLineWidth(lineWidth*4.0);
-        char str[21];
         glPushMatrix();
         if(gameover) {
           sprintf(str, "Game over!");
@@ -83,9 +96,9 @@ void display() {
             glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
         }
         glPopMatrix();
-
-        drawMenuButton(0.1775, 0.426, 0.3, 0.05, "Play again");
-        drawMenuButton(0.1775, 0.326, 0.15, 0.05, "Quit");
+        
+        drawMenuButton(0.1775, 0.426, 0.3, 0.05, "Play again  p");
+        drawMenuButton(0.1775, 0.326, 0.15, 0.05, "Quit  q");
 
         glColor3f(119./255., 110./255., 101./255.);
         
@@ -114,15 +127,14 @@ void display() {
 
 void keyboard(unsigned char key, int x, int y) {
     if (menu) {
-        // This will probably be removed in the future
         switch (tolower(key)) {
-            /*case 'x':  // restart the game
+            case 'p':  // play again
                 init();
                 menu = false;
                 break;
             case 'q':  // exit the game
                 exit(0);
-                break;*/
+                break;
             case 0x1B:  // close menu
                 menu = false;
                 break;

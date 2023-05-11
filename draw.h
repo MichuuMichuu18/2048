@@ -78,7 +78,10 @@ void drawMenuButton(float x, float y, float xsize, float ysize, char* text) {
     glPushMatrix();
     glTranslatef(x+0.025, y+ysize/2, 0);
     glScalef(0.00025, 0.00025, 0);
-    for (int k = 0; k < strlen(text); k++) {
+    int textlen = strlen(text);
+    for (int k = 0; k < textlen; k++) {
+        if(showkey && k > textlen-2) { glColor3f(159./255., 150./255., 141./255.); }
+        else { glColor3f(238.0/255.0, 228.0/255.0, 218.0/255.0); }
         glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, text[k]);
     }
     glPopMatrix();

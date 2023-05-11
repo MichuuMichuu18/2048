@@ -1,6 +1,8 @@
 void init() {
     int i, j;
     
+    gamenum++;
+    if(gamenum > 1) showkey = false;
     score = 0, menu = false, gameover = false;
 
     srand(time(NULL));

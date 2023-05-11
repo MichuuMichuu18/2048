@@ -3,8 +3,8 @@
 #define N 4
 
 float lineWidth = 1.0;
-bool menu, gameover;
-int board[N][N], score, viewportWidth, viewportHeight, xOffset, yOffset;
+bool menu, gameover, showkey = true;
+int board[N][N], score, viewportWidth, viewportHeight, xOffset, yOffset, gamenum = 0;
 
 typedef struct {
     int r, g, b;
