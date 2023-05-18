@@ -1,13 +1,11 @@
 void display() {
-  int i, j;
-    
   if (menu) glClearColor(204.0/255.0/1.5, 192.0/255.0/1.5, 179.0/255.0/1.5, 1.0);
   else glClearColor(204.0/255.0, 192.0/255.0, 179.0/255.0, 1.0);
 
   glClear(GL_COLOR_BUFFER_BIT);
 
-  for (i = 0; i < N; i++) {
-    for (j = 0; j < N; j++) {
+  for (int i = 0; i < N; i++) {
+    for (int j = 0; j < N; j++) {
       int value = board[i][j];
       if (value == 0) continue;
       
@@ -40,11 +38,11 @@ void display() {
         glTranslatef((j + 0.15) / N, (i + 0.35) / N+0.0125, 0);
         glScalef(0.00075, 0.00075, 0);
       } else if (value < 1000){
-          glTranslatef((j + 0.175) / N, (i + 0.4) / N+0.0125, 0);
-          glScalef(0.0005, 0.0005, 0);
+        glTranslatef((j + 0.175) / N, (i + 0.4) / N+0.0125, 0);
+        glScalef(0.0005, 0.0005, 0);
       } else {
-          glTranslatef((j + 0.16) / N, (i + 0.425) / N, 0);
-          glScalef(0.0004, 0.0004, 0);
+        glTranslatef((j + 0.16) / N, (i + 0.425) / N, 0);
+        glScalef(0.0004, 0.0004, 0);
       }
       for (int k = 0; k < strlen(str); k++) glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
       glPopMatrix();
@@ -146,15 +144,9 @@ void keyboard(unsigned char key, int x, int y) {
     }
     if (moved) {
       add();
-      if (isGameOver()) {
-        gameover = true;
-        menu = true;
-      }
+      if (isGameOver()) gameover = true, menu = true;
     } else {
-      if (isGameOver()) {
-        gameover = true;
-        menu = true;
-      }
+      if (isGameOver()) gameover = true, menu = true;
     }
   }
   glutPostRedisplay();
@@ -194,18 +186,16 @@ void mouse(int button, int state, int x, int y) {
     // if menu is opened
     if (menu) {
       float dist = sqrt(dx*dx + dy*dy);
-      // Check if mouse click is inside X button
+      // Check if mouse click is inside...
+      
+      // Menu close button
       if (dist <= 0.025f) menu = false;
       
-      // Check if mouse click is inside menu button
-      if (xf >= 0.1775 && xf <= 0.4775 && yf >= 0.426 && yf <= 0.486) {
-        // Play again
-        init();
-        menu = false;
-      } else if (xf >= 0.1775 && xf <= 0.3275 && yf >= 0.326 && yf <= 0.386) {
-        // Quit
-        exit(0);
-      }
+      // Play again button
+      if (xf >= 0.1775 && xf <= 0.4775 && yf >= 0.426 && yf <= 0.486) { init(); menu = false; }
+      
+      // Quit button
+      if (xf >= 0.1775 && xf <= 0.3275 && yf >= 0.326 && yf <= 0.386) exit(0);
     }
   }
   glutPostRedisplay();
