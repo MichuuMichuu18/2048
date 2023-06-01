@@ -66,11 +66,13 @@ void display() {
     sprintf(str, "Quit");
     drawMenuButton(0.1775, 0.326, 0.15, 0.05);
     
-    color(159., 150., 141.);
-    sprintf(str, "p");
-    text(0.5, 0.455, 2.0, 2.0, 2.0);
-    sprintf(str, "q");
-    text(0.35, 0.355, 2.0, 2.0, 2.0);
+    if (showkey) {
+      color(159., 150., 141.);
+      sprintf(str, "p");
+      text(0.5, 0.455, 2.0, 2.0, 2.0);
+      sprintf(str, "q");
+      text(0.35, 0.355, 2.0, 2.0, 2.0);
+    }
     
     // Draw line between score number and menu buttons
     color(119.0, 110.0, 101.0);
