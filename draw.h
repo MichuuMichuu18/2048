@@ -1,3 +1,14 @@
+void color(float r, float g, float b) { glColor3f(r/255.0, g/255.0, b/255.0); }
+
+void text(float x, float y, float scalex, float scaley, float thickness) {
+  glLineWidth(lineWidth*thickness);
+  glPushMatrix();
+  glTranslatef(x, y, 0);
+  glScalef(0.0001*scalex, 0.0001*scaley, 0);
+  for (int k = 0; k < strlen(str); k++) glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
+  glPopMatrix();
+}
+
 void drawCircle(float x, float y, float radius) {
   glBegin(GL_TRIANGLE_FAN);
 
@@ -63,7 +74,7 @@ void drawCloseButton(float x, float y, float size) {
   glLineWidth(prevLineWidth);
 }
 
-void drawMenuButton(float x, float y, float xsize, float ysize, char* text) {
+void drawMenuButton(float x, float y, float xsize, float ysize) {
   // Darker part of the button
   glColor3f(68./255./1.5, 58./255./1.5, 48./255./1.5);
   drawRoundedRectangle(x, y, xsize, -0.01+ysize, 0.015);
@@ -73,16 +84,6 @@ void drawMenuButton(float x, float y, float xsize, float ysize, char* text) {
   drawRoundedRectangle(x, y+0.01, xsize, 0.01+ysize, 0.015);
   
   // Text on top of the button
-  glColor3f(219./255., 210./255., 201./255.);
-  glLineWidth(lineWidth*2.0);
-  glPushMatrix();
-  glTranslatef(x+0.025, y+ysize/2, 0);
-  glScalef(0.00025, 0.00025, 0);
-  int textlen = strlen(text);
-  for (int k = 0; k < textlen; k++) {
-    if(showkey && k > textlen-2) { glColor3f(159./255., 150./255., 141./255.); }
-    else { glColor3f(238.0/255.0, 228.0/255.0, 218.0/255.0); }
-    glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, text[k]);
-  }
-  glPopMatrix();
+  glColor3f(238.0/255.0, 228.0/255.0, 218.0/255.0);
+  text(x+0.025, y+ysize/2, 2.5, 2.5, 2.0);
 }

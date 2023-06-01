@@ -1,6 +1,6 @@
 void display() {
-  if (menu) glClearColor(204.0/255.0/1.5, 192.0/255.0/1.5, 179.0/255.0/1.5, 1.0);
-  else glClearColor(204.0/255.0, 192.0/255.0, 179.0/255.0, 1.0);
+  if (menu) { glClearColor(204.0/255.0/1.5, 192.0/255.0/1.5, 179.0/255.0/1.5, 1.0); }
+  else      { glClearColor(204.0/255.0,     192.0/255.0,     179.0/255.0,     1.0); }
 
   glClear(GL_COLOR_BUFFER_BIT);
 
@@ -9,86 +9,71 @@ void display() {
       int value = board[i][j];
       if (value == 0) continue;
       
-      Color color = colors[(int)log2(value) - 1];
-      int r = color.r, g = color.g, b = color.b;
+      Color bcolor = colors[(int)log2(value) - 1];
+      int r = bcolor.r, g = bcolor.g, b = bcolor.b;
       
       // Draw blocks
-      float cr = r/255.0, cg = g/255.0, cb = b/255.0;
+      float cr = r, cg = g, cb = b;
       if (menu) cr /= 1.5, cg /= 1.5, cb /= 1.5;
       
-      glColor3f(cr/1.25, cg/1.25, cb/1.25);
+      color(cr/1.25, cg/1.25, cb/1.25);
       drawRoundedRectangle((j + 0.1) / N, (i + 0.1) / N-0.0125, 0.8 / N, 0.8 / N, 0.1 / N);
-      glColor3f(cr, cg, cb);
+      color(cr, cg, cb);
       drawRoundedRectangle((j + 0.1) / N, (i + 0.1) / N+0.0125, 0.8 / N, 0.8 / N, 0.1 / N);
       
       // Draw text on blocks
-      glLineWidth(lineWidth*4.0);
+               float tcr = 119.0, tcg = 110.0, tcb = 101.0;
+      if (value > 9) tcr = 249.0, tcg = 246.0, tcb = 242.0;
       
-      float tcr = 119.0/255.0, tcg = 110.0/255.0, tcb = 101.0/255.0;
-      if (value > 9) tcr = 249.0/255.0, tcg = 246.0/255.0, tcb = 242.0/255.0;
       if (menu) tcr /= 1.5, tcg /= 1.5, tcb /= 1.5;
-      glColor3f(tcr, tcg, tcb);
+      color(tcr, tcg, tcb);
       
       sprintf(str, "%d", value);
-      glPushMatrix();
-      if (value < 10) {
-        glTranslatef((j + 0.3) / N, (i + 0.325) / N+0.0125, 0);
-        glScalef(0.001, 0.001, 0);
-      } else if (value < 100) {
-        glTranslatef((j + 0.15) / N, (i + 0.35) / N+0.0125, 0);
-        glScalef(0.00075, 0.00075, 0);
-      } else if (value < 1000){
-        glTranslatef((j + 0.175) / N, (i + 0.4) / N+0.0125, 0);
-        glScalef(0.0005, 0.0005, 0);
-      } else {
-        glTranslatef((j + 0.16) / N, (i + 0.425) / N, 0);
-        glScalef(0.0004, 0.0004, 0);
-      }
-      for (int k = 0; k < strlen(str); k++) glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
-      glPopMatrix();
+      if      (value < 10)   { text((j + 0.3) / N,   (i + 0.325) / N+0.0125, 10.0, 10.0, 4.0); }
+      else if (value < 100)  { text((j + 0.15) / N,  (i + 0.35) / N+0.0125,  7.5,  7.5,  4.0); }
+      else if (value < 1000) { text((j + 0.175) / N, (i + 0.4) / N+0.0125,   5.0,  5.0,  4.0); }
+      else                   { text((j + 0.16) / N,  (i + 0.425) / N+0.0125, 4.0,  4.0,  4.0); }
     }
   }
   
   // Menu
   if (menu) {
-    glColor3f(238.0/255.0/1.25, 228.0/255.0/1.25, 218.0/255.0/1.25);
+    color(238.0/1.25, 228.0/1.25, 218.0/1.25);
     drawRoundedRectangle(0.1, 0.25, 0.8, 0.5, 0.05);
-    glColor3f(238.0/255.0, 228.0/255.0, 218.0/255.0);
+    color(238.0,      228.0,      218.0);
     drawRoundedRectangle(0.1, 0.275, 0.8, 0.5, 0.05);
         
     drawCloseButton(0.825, 0.69, 0.05);
         
     if (showkey) {
-      glColor3f(159./255., 150./255., 141./255.);
-      glLineWidth(lineWidth*2.0);
-      glPushMatrix();
-      glTranslatef(0.71, 0.71, 0);
-      glScalef(0.00025, 0.00025, 0);
+      color(159.0, 150.0, 141.0);
       sprintf(str, "esc");
-      for (int k = 0; k < strlen(str); k++) glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
-      glPopMatrix();
+      text(0.74, 0.715, 2.0, 2.0, 2.0);
     }
-        
+    
     glColor3f(119.0/255.0, 110.0/255.0, 101.0/255.0);
-    glLineWidth(lineWidth*4.0);
     glPushMatrix();
     if (gameover) {
       sprintf(str, "Game over!");
-      glTranslatef(0.25, 0.65, 0);
+      text(0.3, 0.65, 4.0, 4.0, 3.5);
     } else {
       sprintf(str, "2048");
-      glTranslatef(0.4, 0.65, 0);
+      text(0.41, 0.65, 4.0, 4.0, 3.5);
     }
-    glScalef(0.0005, 0.0005, 0);
-    for (int k = 0; k < strlen(str); k++) glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
-    glPopMatrix();
     
-    drawMenuButton(0.1775, 0.426, 0.3, 0.05, "Play again  p");
-    drawMenuButton(0.1775, 0.326, 0.15, 0.05, "Quit  q");
+    sprintf(str, "Play again");
+    drawMenuButton(0.1775, 0.426, 0.3, 0.05);
+    sprintf(str, "Quit");
+    drawMenuButton(0.1775, 0.326, 0.15, 0.05);
     
-    glColor3f(119.0/255.0, 110.0/255.0, 101.0/255.0);
+    color(159., 150., 141.);
+    sprintf(str, "p");
+    text(0.5, 0.455, 2.0, 2.0, 2.0);
+    sprintf(str, "q");
+    text(0.35, 0.355, 2.0, 2.0, 2.0);
     
     // Draw line between score number and menu buttons
+    color(119.0, 110.0, 101.0);
     glLineWidth(lineWidth);
     glTranslatef(0.0, 0.0, 0);
     glScalef(1.0, 1.0, 0);
@@ -98,12 +83,7 @@ void display() {
     glEnd();
     
     sprintf(str, "Score: %d", score);
-    glPushMatrix();
-    glLineWidth(lineWidth*2.0);
-    glTranslatef(0.1775, 0.575, 0);
-    glScalef(0.00025, 0.00024, 0);
-    for (int k = 0; k < strlen(str); k++) glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, str[k]);
-    glPopMatrix();
+    text(0.1775, 0.575, 2.5, 2.5, 2.0);
   }
     
   glutSwapBuffers();
