@@ -26,6 +26,7 @@ Then clone repository and compile source code:
 
 ````
 git clone https://github.com/MichuuMichuu18/2048.git
-cd 2048
-gcc 2048.c -o 2048 -lGL -lGLU -lglut -lm
+mkdir 2048/build && cd 2048/build
+cmake ..
+make
 ````
