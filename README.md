@@ -5,21 +5,21 @@
 
 # Build instructions
 
-You need to install Git, freeglut development files and GNU GCC compiler:
+You need to install Git, freeglut development files, GNU GCC compiler and CMake:
 
 Debian/Ubuntu:
 ````
-sudo apt install git gcc freeglut3-dev
+sudo apt install git freeglut3-dev gcc cmake
 ````
 
 Fedora:
 ````
-sudo dnf install git gcc freeglut-devel
+sudo dnf install git freeglut-devel gcc cmake
 ````
 
 Arch:
 ````
-sudo pacman -S git gcc freeglut
+sudo pacman -S git freeglut gcc cmake
 ````
 
 Then clone repository and compile source code:
